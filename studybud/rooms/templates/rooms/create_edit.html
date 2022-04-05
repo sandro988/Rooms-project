@@ -1,0 +1,20 @@
+{% extends 'main.html' %}
+
+{% block content %} 
+
+    
+
+    <form method="POST" action="">
+        {% csrf_token %}
+        {{form.as_p}}
+
+        <input type="submit" name="Submit">
+        
+    </form>
+    
+    {% if page == 'edit-room' %}
+        <hr>
+        <p>This room was last edited on: {{room.updated}}</p>
+    {% endif %}
+
+{% endblock %}

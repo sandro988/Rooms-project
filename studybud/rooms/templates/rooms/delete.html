@@ -1,0 +1,17 @@
+{% extends 'main.html' %} 
+
+
+{% block content %} 
+
+    <form method='POST' action="">
+        {% csrf_token %}
+        {% if page == 'delete-room' %}
+        <h3>You really want to delete: {{obj.name}}?</h3>
+        {% else %} 
+        <h3>You really want to delete: {{obj.body}}?</h3>
+        {% endif %}
+        <a href="{{ request.META.HTTP_REFERER }}">Go back</a>
+        <input type="submit" name="delete">
+    </form>
+
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'main.html' %} {% block content %}
+
+<style>
+    .room-container {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+    }
+</style>
+
+
+<div class="room-container">
+
+    <div>
+        <h1>{{room.name}}</h1>
+        <p><a href="{% url 'user-profile' room.host.id %}">@{{room.host}}</a> | Created at: {{room.created}}</p>
+        <p>Topic: {{room.topic}}</p>
+        <fieldset>
+            <legend><h3 style="margin: 0">Description</h3></legend>
+            <p>{{room.description}}</p>
+        </fieldset>
+        <br />
+        <hr />
+        <br>
+
+        <h3 style="text-align: center">Comments</h3>
+
+
+        <!-- if we are simply looking for a room page -->
+        {% if page != 'edit-message' %}
+            {% for comment in comments %}
+            <div style="padding: 10px 0">
+                <fieldset>
+                    <legend>
+                        <p
+                            style="
+                                display: inline;
+                                border: 1px solid black;
+                                padding: 5px 10px;
+                            "
+                        >
+                            <a href="{% url 'user-profile' comment.user.id %}">{{comment.user.username}}</a>
+                        </p>
+                        {% if request.user == comment.user %}
+                        <a href="{% url 'edit-message' comment.id %}">Edit</a>
+                        <a href="{% url 'delete-message' comment.id%}">Delete</a>
+                        {% endif %}
+                    </legend>
+
+                    <p>{{comment.body}}</p>
+                    <small style="text-align: right; display: block"><em>Created: {{comment.created|timesince}} ago</em></small>
+                    <small style="text-align: right; display: block"><em>Last updated: {{comment.updated|timesince}} ago</em></small>
+
+                </fieldset>
+            </div>
+            {% endfor %}
+            <br>
+            <hr>
+            <br>
+
+            {% if request.user.is_authenticated %}
+                <form method="POST" action="">
+                    {% csrf_token %}
+
+                    <input type="textarea" placeholder="Enter text" name="body" />
+                    <input type="submit" value="Comment" />
+                </form>
+            {% endif %}
+            <br>
+            <br>
+            <br>
+
+        <!-- If fe want to change our comments -->
+        {% else %}
+
+            {% for comment in comments %}
+            <div style="padding: 10px 0">
+                <fieldset>
+                    <legend>
+                        <p
+                            style="
+                                display: inline;
+                                border: 1px solid black;
+                                padding: 5px 10px;
+                            "
+                        >
+                        <a href="{% url 'user-profile' comment.user.id %}">{{comment.user.username}}</a>
+                        </p>
+                        {% if request.user == comment.user %}
+                        <a href="{% url 'edit-message' comment.id %}">Edit</a>
+                        <a href="{% url 'delete-message' comment.id%}">Delete</a>
+                        {% endif %}
+                    </legend>
+
+                    {% if comment_exact.id == comment.id %}
+                        <form action="" method="POST">
+                            {% csrf_token %}
+                            <input type="text" name="body">
+                            <input type="submit">
+                        </form>
+                    {% else %} 
+                        <p>{{comment.body}}</p>
+                    {% endif %}
+                    
+                </fieldset>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div>
+        <h3>Participants</h3>
+
+        {% for user in participants %} 
+            <div>
+                <a href="{% url 'user-profile' user.id %}">{{user.username}}</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

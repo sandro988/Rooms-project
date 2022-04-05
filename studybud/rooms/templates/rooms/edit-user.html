@@ -1,0 +1,14 @@
+{% extends 'main.html' %} 
+
+{% block content %} 
+
+    <form method='POST' action="">
+        {% csrf_token %} 
+        {% for item in form %} 
+            <p>{{item}}</p>
+        {% endfor %}
+
+        <input type="submit">
+    </form>
+
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'main.html' %} 
+
+
+
+{% block content %} 
+
+    <style>
+        .main-container{
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr;
+        }
+
+        .activity{
+            border: 2px solid black;
+            padding: 10px;
+            margin: 10px 10px;
+        }
+    </style>
+
+
+    <a href="{% url 'create-room' %}">Create Room</a>
+    <div class="main-container">
+
+
+        <div>
+            {% include 'rooms/topics_component.html' %}
+        </div>
+
+        <div>
+            {% include 'rooms/feed_component.html' %}
+        </div>
+        
+        <div>
+            {% include 'rooms/activity_component.html' %}
+        </div>
+
+    </div>
+
+{% endblock %}
