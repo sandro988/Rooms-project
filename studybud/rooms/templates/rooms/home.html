@@ -1,39 +1,43 @@
 {% extends 'main.html' %} 
 
-
-
 {% block content %} 
-
-    <style>
-        .main-container{
-            display: grid;
-            grid-template-columns: 1fr 3fr 1fr;
-        }
-
-        .activity{
-            border: 2px solid black;
-            padding: 10px;
-            margin: 10px 10px;
-        }
-    </style>
+    <div class="main">
+        <div class="main-container">
 
 
-    <a href="{% url 'create-room' %}">Create Room</a>
-    <div class="main-container">
+            <div class="topics-component">
+                {% include 'rooms/topics_component.html' %}
+            </div>
 
+            <div class="feed-component">
+                <div class="feed-header">
+                    <h5>Number of rooms: {{room_count}}</h5>
+                    <a href="{% url 'create-room' %}">
+                        <div class="create-room-button">
+                
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg><p>Create Room</p>
+                        </div>
+                    </a>
+                </div>
+                {% include 'rooms/feed_component.html' %}
+            </div>
+            
+            <div class="activity-component">
+                {% include 'rooms/activity_component.html' %}
+            </div>
 
-        <div>
-            {% include 'rooms/topics_component.html' %}
-        </div>
-
-        <div>
-            {% include 'rooms/feed_component.html' %}
-        </div>
-        
-        <div>
-            {% include 'rooms/activity_component.html' %}
         </div>
 
     </div>
+    <style>
+        
 
+        /* .activity{
+            border: 2px solid black;
+            padding: 10px;
+            margin: 10px 10px;
+        } */
+    </style>
 {% endblock %}

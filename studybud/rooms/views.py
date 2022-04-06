@@ -7,6 +7,8 @@ from .models import Room, Topic, Message
 from django.contrib.auth.models import User
 from django.db.models import Q
 from .forms import RoomForm, UserForm
+from django.core.paginator import Paginator
+from django.db.models import Count
 
 # Create your views here.
 
@@ -54,25 +56,32 @@ def registerPage(request):
 
 def home(request):
     q = request.GET.get('q') if request.GET.get('q') is not None else ''
+    room_all = Room.objects.all()
 
     rooms = Room.objects.filter(
         Q(name__icontains=q) |
         # Q(description__icontains=q) |
         Q(topic__name__icontains=q)
         ) 
-
-    topics = Topic.objects.all()
-    
-    room_count = rooms.count()
     activities = Message.objects.filter(
         Q(room__topic__name__icontains=q)
-        ) 
+        )[:5]
+    topics = Topic.objects.annotate(num_children=Count('room')).order_by('-num_children')[:10]
+    room_count = rooms.count()
+    
+    # paginator
+    paginator = Paginator(rooms, 6)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     context = {
         'rooms': rooms, 
         'topics': topics, 
         'room_count': room_count,
-        'activities': activities}
+        'activities': activities,
+        'room_all': room_all,
+        'page_obj': page_obj,
+        'paginator': paginator,}
 
     return render(request, 'rooms/home.html', context)
 
@@ -133,16 +142,27 @@ def deleteMessage(request, pk):
 
 def userProfile(request, pk):
     user = User.objects.get(id=pk)
+    room_all = Room.objects.all()
     rooms = user.room_set.all()
     room_count = rooms.count()
     activities = user.message_set.all()
-    topics = Topic.objects.all()
+    print(activities)
+    topics = Topic.objects.annotate(num_children=Count('room')).order_by('-num_children')[:10]
+
+
+    paginator = Paginator(rooms, 4)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
         'user': user, 
         'rooms': rooms, 
         'activities': activities,
         'topics': topics,
-        'room_count': room_count}
+        'room_count': room_count,
+        'page_obj': page_obj,
+        'paginator': paginator,
+        'room_all': room_all}
     return render(request, 'rooms/profile.html', context)
 
 

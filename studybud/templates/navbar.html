@@ -1,19 +1,31 @@
-<div>
-    <a href="/">
-        <h1>Home</h1>
+<nav class='navbar'>
+    <a href="{% url 'home' %}" class="navbar-header">
+        <h1>Studybud</h1>
     </a>
 
-    {% if request.user.is_authenticated %}
-        <a href="{% url 'logout' %}">Logout</a>
-        <a href="{% url 'edit-user' request.user.id %}">Edit user</a>
-    {% else %} 
-        <a href="{% url 'login' %}">Login</a>
-        <a href="{% url 'register' %}">Register</a>
-    {% endif %}
 
-    <form method='GET' action="{% url 'home' %}">
-        <input type="text" name="q" placeholder="Search Rooms...">
-    </form>
+    <div class="navbar-secondhalf">
+        <div class="search-div">
 
-    <hr>
-</div>
+            <form method='GET' action="{% url 'home' %}">
+                <input class='search-bar' type="text" name="q" placeholder="Search Rooms...">
+            </form>
+
+            
+        </div>
+        
+        <div class="navbar-links">
+            {% if request.user.is_authenticated %}
+                <a class='logout' href="{% url 'logout' %}">Logout</a>
+                
+                <a class='edit-user' href="{% url 'edit-user' request.user.id %}">Edit user</a>
+            
+            {% else %} 
+            
+                <a class="login" href="{% url 'login' %}">Login</a>
+                <a class="register" href="{% url 'register' %}">Register</a>
+            
+            {% endif %}
+        </div>
+    </div>
+</nav>

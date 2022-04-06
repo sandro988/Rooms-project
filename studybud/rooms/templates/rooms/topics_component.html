@@ -1,7 +1,22 @@
-<h3>Room Topics</h3>
-<a href="{% url 'home' %}">All {{room_count}}</a>
-{% for topic in topics %}
-<p>
-    <a href="{% url 'home' %}?q={{topic.name}}" name="q">{{topic.name}} {{topic.room_set.all.count}}</a>
-</p>
-{% endfor %}
+<h3 class="topics-header">Top Room Topics</h3>
+
+<div class="topic-main-div">
+
+    <a href="{% url 'home' %}" class="topic-link">
+        <div class="topic-div">
+            <p>All</p>
+            <p class="topic-number" >{{room_all.count}}</p>
+        </div>
+    </a>
+    
+    {% for topic in topics %}
+    
+        <a href="{% url 'home' %}?q={{topic.name}}" name="q" class="topic-link">
+            <div class="topic-div">
+                <p>{{topic.name}}</p>
+                <p class="topic-number">{{topic.room_set.all.count}}</p>
+            </div>
+        </a>
+    {% endfor %}
+</div>
+    

@@ -2,33 +2,30 @@
 
 {% block content %} 
 
-    <style>
-        .profile-container {
-            display: grid;
-            grid-template-columns: 1fr 3fr 1fr;
-        }
-
-        .activity{
-            border: 2px solid black;
-            padding: 10px;
-            margin: 10px 10px;
-        }
-    </style>
-
-    <h1>{{user.username}}'s profile page</h1>
-    <a href="{% url 'edit-user' user.id %}">Edit user</a>
-
-    <div class="profile-container">
-        <div>
-            {% include 'rooms/topics_component.html' %}
-        </div>
-
-        <div>
-            {% include 'rooms/feed_component.html' %}
-        </div>
-
-        <div>
-            {% include 'rooms/activity_component.html' %}
+    <div class="main">
+        <div class="profile-container" >
+            <div class="topics-component">
+                {% include 'rooms/topics_component.html' %}
+            </div>
+            
+            <div class="feed-component">
+                <div class="feed-header">
+                    <h1>{{user.username|title}}'s profile page</h1>
+                    <a href="{% url 'edit-user' user.id %}">
+                        <div class="edit-user-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              <p>Edit User</p>
+                        </div>
+                    </a>
+                </div>
+                {% include 'rooms/feed_component.html' %}
+            </div>
+            
+            <div class="activity-component">
+                {% include 'rooms/activity_component.html' %}
+            </div>
         </div>
     </div>
 {% endblock %}

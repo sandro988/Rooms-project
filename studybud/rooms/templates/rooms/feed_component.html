@@ -1,19 +1,64 @@
-<h5>Number of rooms: {{room_count}}</h5>
+<div class="room-flex-container">
+    {% for room in page_obj.object_list %}
 
-{% for room in rooms %}
-    <div>
+            <div class="room-div">
+                <div class="room-name-members">
+                    <a class='room-name' href="{% url 'room' room.id%}"><h3 >{{room.name}} | {{room.topic}}</h3></a><br>
 
-        <h3 >{{room.name}} | {{room.topic}}</h3>
-        {% if room.host == request.user %}
-            <a href="{% url 'edit-room' room.id %}">Edit</a>
-            <a href="{% url 'delete-room' room.id %}">Delete</a><br>
+                    <div class="members-number">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                        </svg>
+                        <p class="participants-count">{{room.participants.count}}</p>
+                    
+                    </div>
+                </div>
+                
+                {% if room.host == request.user %}
+                <a href="{% url 'edit-room' room.id %}">Edit</a>
+                <a href="{% url 'delete-room' room.id %}">Delete</a><br>
+                {% endif %}
+                <a href="{% url 'user-profile' room.host.id %}">@{{room.host}}</a>
+                <p style="color: white; display: inline;"> | Created: {{room.created|timesince}} ago</p><br><br>
+                    
+
+                <fieldset>
+                    <legend>Description</legend>
+                    <p style="color: white">{{room.description}}</p>
+                </fieldset>
+                    
+                </div>
+    {% empty %} 
+        <h3 class="no-rooms-found">No rooms found</h3>
+    {% endfor %}
+</div>
+
+
+<div class="pagination">
+
+    <div class="current">
+            <!-- first and previoius-->
+        {% if page_obj.has_previous %} 
+            <a href="{{request.path}}?page=1">&laquo; first</a>
+            <!-- <a href="{% url 'home' %}?page={{page_obj.previous_page_number}}">previous</a> -->
         {% endif %}
-        <a href="{% url 'user-profile' room.host.id %}">@{{room.host}}</a><em>| Created at: {{room.created}}<em><br><br>
-        <a href="{% url 'room' room.id%}">{{room.id}} - {{room.name}}</a>
-        <p>Number of participants: {{room.participants.count}}</p>
-        <hr>
-                        
+
+        {% for pg in paginator.page_range %} 
+            {% if forloop.counter < 8 and room_count != 0%} 
+                {% if pg == page_obj.number %}
+                    <a class="page-number-link current-page" style="background-color: white; color: #364783;" href="{{request.path}}?page={{pg}}">{{pg}}</a>
+                {% else %} 
+                    <a class="page-number-link" href="{{request.path}}?page={{pg}}">{{pg}}</a>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+            <!-- Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}. -->
+            
+            
+            <!--next and last -->
+        {% if page_obj.has_next %} 
+            <!-- <a href="{% url 'home' %}?page={{ page_obj.next_page_number }}">next</a> -->
+            <a href="{{request.path}}?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
     </div>
-{% empty %} 
-    <h3>No rooms found</h3>
-{% endfor %}
+</div>
