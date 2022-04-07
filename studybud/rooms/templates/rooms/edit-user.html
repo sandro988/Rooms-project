@@ -2,10 +2,13 @@
 
 {% block content %} 
 
-    <form method='POST' action="">
+    <form method='POST' enctype="multipart/form-data" action="">
         {% csrf_token %} 
         {% for item in form %} 
             <p>{{item}}</p>
+        {% endfor %}
+        {% for field in form_advanced %}
+            <p>{{field}}</p>
         {% endfor %}
 
         <input type="submit">

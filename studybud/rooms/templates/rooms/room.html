@@ -94,8 +94,9 @@
                     {% if comment_exact.id == comment.id %}
                         <form action="" method="POST">
                             {% csrf_token %}
-                            <input type="text" name="body">
+                            <input type="text" name="body" value="{{comment.body}}">
                             <input type="submit">
+                            <a href="{{ request.META.HTTP_REFERER }}">Cancel</a>
                         </form>
                     {% else %} 
                         <p>{{comment.body}}</p>

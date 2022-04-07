@@ -37,3 +37,12 @@ class Message(models.Model):
 
     def __str__(self):
         return self.body[:50]
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE, related_name='userprofile')
+    bio = models.TextField(blank=True, null=True)
+    picture = models.ImageField(null=True, blank=True)
+
+    def __str__(self):
+        return self.bio[:50]

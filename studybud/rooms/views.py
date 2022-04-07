@@ -1,12 +1,13 @@
+from gettext import install
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-from .models import Room, Topic, Message
+from .models import Room, Topic, Message, UserProfile
 from django.contrib.auth.models import User
 from django.db.models import Q
-from .forms import RoomForm, UserForm
+from .forms import RoomForm, UserForm, ProfileForm
 from django.core.paginator import Paginator
 from django.db.models import Count
 
@@ -70,7 +71,7 @@ def home(request):
     room_count = rooms.count()
     
     # paginator
-    paginator = Paginator(rooms, 6)
+    paginator = Paginator(rooms, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -104,11 +105,31 @@ def room(request, pk):
     return render(request, 'rooms/room.html', context)
 
 @login_required(login_url='login')
+def joinRoom(request, pk):
+    room = Room.objects.get(id=pk)
+    # comments = room.message_set.all()
+    # participants = room.participants.all()
+
+    room.participants.add(request.user)
+    
+    return redirect('room', pk=room.id)
+
+@login_required(login_url='login')
+def leaveRoom(request, pk):
+    room = Room.objects.get(id=pk)
+    participants = room.participants.all()
+
+    room.participants.remove(request.user)
+    return redirect('home')
+
+@login_required(login_url='login')
 def editMessage(request, pk):
     page='edit-message'
     comment = Message.objects.get(id=pk)
     room = Room.objects.get(id=comment.room.id)
     comments = room.message_set.all()
+    
+    participants = room.participants.all()
 
     if request.user != comment.user:
         messages.error(request, 'You are not allowed to edit other users messages')
@@ -120,7 +141,12 @@ def editMessage(request, pk):
         messages.success(request, 'Your comment was successfully edited')
         return redirect('room', pk=comment.room.id)
 
-    context = {'comment_exact': comment, 'comments': comments, 'page': page, 'room': room}
+    context = {
+        'comment_exact': comment, 
+        'comments': comments, 
+        'page': page, 
+        'room': room,
+        'participants': participants}
     return render(request, 'rooms/room.html', context)
 
 @login_required(login_url='login')
@@ -136,9 +162,25 @@ def deleteMessage(request, pk):
         comment.delete()
         messages.success(request, 'Your comment was successfully deleted')
         return redirect('room', pk=comment.room.id)
+
     context = {'obj': comment, 'page': page}
     return render(request, 'rooms/delete.html', context)
 
+
+@login_required(login_url='login')
+def addMessage(request, pk):
+    page='add-message'
+    room = Room.objects.get(id=pk)
+    comments = room.message_set.all()
+    participants = room.participants.all()
+
+
+    context = {
+        'comments': comments, 
+        'page': page, 
+        'room': room,
+        'participants': participants}
+    return render(request, 'rooms/room.html', context)
 
 def userProfile(request, pk):
     user = User.objects.get(id=pk)
@@ -227,13 +269,22 @@ def deleteRoom(request, pk):
 @login_required(login_url='login')
 def editUser(request, pk):
     user = request.user
+    userprofile = UserProfile.objects.all()
+
     form = UserForm(instance=user)
+    form_advanced = ProfileForm()
 
     if request.method == 'POST':
         form = UserForm(request.POST, instance=user)
-        if form.is_valid():
+        form_advanced = ProfileForm(request.POST, request.FILES)
+
+        if form.is_valid and form_advanced.is_valid():
+            userprofile = form_advanced.save(commit=False) 
+            userprofile.user = user
+
+            form_advanced.save()
             form.save()
             return redirect('user-profile', pk=user.id)
 
-    context = {'form': form}
+    context = {'form_advanced': form_advanced, 'form': form}
     return render(request, 'rooms/edit-user.html', context)

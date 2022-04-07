@@ -1,25 +1,69 @@
+{% load static %}
 <div class="room-flex-container">
     {% for room in page_obj.object_list %}
 
-            <div class="room-div">
+            <div id="room" class="room-div">
                 <div class="room-name-members">
                     <a class='room-name' href="{% url 'room' room.id%}"><h3 >{{room.name}} | {{room.topic}}</h3></a><br>
 
                     <div class="members-number">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
-                        </svg>
-                        <p class="participants-count">{{room.participants.count}}</p>
+                        <div class="members-number-inner">
+                            
+                            {% if request.user != room.host and not request.user in room.participants.all %}
+                            <a class="members-number-inner-a" href="{% url 'join-room' room.id %}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                  </svg>
+                            </a>
+                            {% elif request.user != room.host and request.user in room.participants.all %} 
+                                <a class="members-number-inner-a" href="{% url 'leave-room' room.id %}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6" />
+                                      </svg>
+                                </a>
+                            
+                            {% endif %}
+                            <a class="members-number-inner-a" href="{% url 'add-message' room.id %}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                  </svg>
+                            </a>
+
+                            {% if room.host == request.user %}
+                            <a class="members-number-inner-a" href="{% url 'edit-room' room.id %}" style="width: 25px; height: 25px">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                  </svg>
+                            </a>
+                            <a class="members-number-inner-a" href="{% url 'delete-room' room.id %}" style="width: 25px; height: 25px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                            </a><br>
+                            {% endif %}
+                        </div>
+
+                        
+                            <p class="participants-count">{{room.participants.count}}</p>
+                        
                     
                     </div>
                 </div>
                 
-                {% if room.host == request.user %}
-                <a href="{% url 'edit-room' room.id %}">Edit</a>
-                <a href="{% url 'delete-room' room.id %}">Delete</a><br>
-                {% endif %}
-                <a href="{% url 'user-profile' room.host.id %}">@{{room.host}}</a>
-                <p style="color: white; display: inline;"> | Created: {{room.created|timesince}} ago</p><br><br>
+                <div class="room-creator-flex">
+                    {% if room.host.userprofile.picture %}
+                    <a href="{% url 'user-profile' room.host.id %}">
+                        <img src="{{ room.host.userprofile.picture.url }}" width="100px" height="100px" alt="">
+                    </a>
+                    {% else %} 
+                    <a href="{% url 'user-profile' room.host.id %}">
+                        <img src="{% static 'images/default.jpg' %}" width="100px" height="100px" alt="Default user image">
+                    </a>
+                    {% endif %}
+                    <a class="room-host" href="{% url 'user-profile' room.host.id %}">@{{room.host}}</a>
+                    <p style="color: white; display: inline;"> | Created: {{room.created|timesince}} ago</p><br><br>
+                </div>
+                
                     
 
                 <fieldset>

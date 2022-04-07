@@ -1,5 +1,5 @@
 {% extends 'main.html' %} 
-
+{% load static %}
 {% block content %} 
 
     <div class="main">
@@ -20,6 +20,31 @@
                         </div>
                     </a>
                 </div>
+
+                <div class="feed-main">
+                    <div class="user-profile-room-count">
+                        <p>Rooms: {{rooms.count}}</p> 
+                    </div>
+                    {% if user.userprofile.picture %}
+                    
+                        <img class="user-profile-picutre" src="{{ user.userprofile.picture.url }}" width="100px" height="100px" alt="">
+                    
+                    {% else %} 
+                    
+                        <img class="user-profile-picutre" src="{% static 'images/default.jpg' %}" width="100px" height="100px" alt="Default user image">
+                    
+                    {% endif %}
+                    <h3 class="user-profile-name">@{{user.username}}</h3>
+                    <fieldset class="user-profile-fieldset">
+                        <legend class="user-profile-legend">Bio</legend>
+                        {% if user.userprofile.bio %}
+                            <p class="user-profile-paragraph">{{user.userprofile.bio}}</p>
+                        {% else %} 
+                            <p class="user-profile-paragraph" style="font-size: 40px;">...</p>
+                        {% endif %}
+                    </fieldset>
+                </div>
+                
                 {% include 'rooms/feed_component.html' %}
             </div>
             
