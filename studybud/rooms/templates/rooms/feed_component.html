@@ -83,16 +83,16 @@
     <div class="current">
             <!-- first and previoius-->
         {% if page_obj.has_previous %} 
-            <a href="{{request.path}}?page=1">&laquo; first</a>
+            <a href="{{request.path}}?q={{q}}&page=1">&laquo; first</a>
             <!-- <a href="{% url 'home' %}?page={{page_obj.previous_page_number}}">previous</a> -->
         {% endif %}
 
         {% for pg in paginator.page_range %} 
             {% if forloop.counter < 8 and room_count != 0%} 
                 {% if pg == page_obj.number %}
-                    <a class="page-number-link current-page" style="background-color: white; color: #364783;" href="{{request.path}}?page={{pg}}">{{pg}}</a>
+                    <a class="page-number-link current-page" style="background-color: white; color: #364783;" href="{{request.path}}?q={{q}}&?page={{pg}}">{{pg}}</a>
                 {% else %} 
-                    <a class="page-number-link" href="{{request.path}}?page={{pg}}">{{pg}}</a>
+                    <a class="page-number-link" href="{{request.path}}?q={{q}}&page={{pg}}">{{pg}}</a>
                 {% endif %}
             {% endif %}
         {% endfor %}
@@ -102,7 +102,7 @@
             <!--next and last -->
         {% if page_obj.has_next %} 
             <!-- <a href="{% url 'home' %}?page={{ page_obj.next_page_number }}">next</a> -->
-            <a href="{{request.path}}?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            <a href="{{request.path}}?q={{q}}&page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
         {% endif %}
     </div>
 </div>

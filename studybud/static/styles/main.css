@@ -22,7 +22,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 30px 30px;
+    padding: 25px 30px;
     position: fixed;
     width: 100%;
     top: 0;
@@ -33,7 +33,7 @@ a {
 }
 
 .navbar h1 {
-    font-size: 40px;
+    font-size: 38px;
     letter-spacing: 2px;
     color: var(--yellow);  
     font-family: 'Abril Fatface', cursive;
@@ -62,8 +62,8 @@ a {
 .navbar-links img {
     border-radius: 50%;
     border: 5px solid var(--main-background);
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
 }
 
 .navbar-links img:hover {
@@ -95,6 +95,7 @@ a {
 
 
 .main {
+    
     width: 95%;
     margin: 0 auto;
 }
@@ -421,7 +422,7 @@ legend {
     margin: 30px 0;
     border-radius: 30px;
     background-color: var(--dark-blue);
-    padding: 40px;
+    padding: 30px;
 }
 
 .feed-main h3 {
@@ -461,6 +462,6 @@ legend {
 }
 
 
-.navbar {
+/* .navbar {
     position: relative;
-}
+} */

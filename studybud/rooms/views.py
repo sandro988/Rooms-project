@@ -67,15 +67,17 @@ def home(request):
     activities = Message.objects.filter(
         Q(room__topic__name__icontains=q)
         )[:5]
-    topics = Topic.objects.annotate(num_children=Count('room')).order_by('-num_children')[:10]
+    topics = Topic.objects.annotate(num_children=Count('room')).order_by('-num_children', '-name')[:10]
     room_count = rooms.count()
     
     # paginator
     paginator = Paginator(rooms, 5)
+    print(request.GET.get('q'))
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     context = {
+        'q': q,
         'rooms': rooms, 
         'topics': topics, 
         'room_count': room_count,
