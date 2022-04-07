@@ -35,6 +35,7 @@
                     
                     {% endif %}
                     <h3 class="user-profile-name">@{{user.username}}</h3>
+                    <h4 class="user-profile-email">{{user.email}}</h4>
                     <fieldset class="user-profile-fieldset">
                         <legend class="user-profile-legend">Bio</legend>
                         {% if user.userprofile.bio %}

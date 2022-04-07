@@ -126,6 +126,7 @@ def leaveRoom(request, pk):
 
 @login_required(login_url='login')
 def editMessage(request, pk):
+    print(request.GET.get('body'))
     page='edit-message'
     comment = Message.objects.get(id=pk)
     room = Room.objects.get(id=comment.room.id)
@@ -134,13 +135,15 @@ def editMessage(request, pk):
     participants = room.participants.all()
 
     if request.user != comment.user:
-        messages.error(request, 'You are not allowed to edit other users messages')
+        # messages.error(request, 'You are not allowed to edit other users messages')
         return redirect('room', pk=comment.room.id)
 
     if request.method == 'POST':
+        
         comment.body = request.POST.get('body')
         comment.save()
-        messages.success(request, 'Your comment was successfully edited')
+
+        
         return redirect('room', pk=comment.room.id)
 
     context = {
@@ -157,12 +160,12 @@ def deleteMessage(request, pk):
     comment = Message.objects.get(id=pk)
 
     if request.user != comment.user:
-        messages.error(request, 'You are not allowed to delete other users messages')
+        # messages.error(request, 'You are not allowed to delete other users messages')
         return redirect('room', pk=comment.room.id)
 
     if request.method == 'POST':
         comment.delete()
-        messages.success(request, 'Your comment was successfully deleted')
+        # messages.success(request, 'Your comment was successfully deleted')
         return redirect('room', pk=comment.room.id)
 
     context = {'obj': comment, 'page': page}
@@ -190,7 +193,6 @@ def userProfile(request, pk):
     rooms = user.room_set.all()
     room_count = rooms.count()
     activities = user.message_set.all()
-    print(activities)
     topics = Topic.objects.annotate(num_children=Count('room')).order_by('-num_children')[:10]
 
 
@@ -272,21 +274,25 @@ def deleteRoom(request, pk):
 def editUser(request, pk):
     user = request.user
     userprofile = UserProfile.objects.all()
-
     form = UserForm(instance=user)
     form_advanced = ProfileForm()
 
+
+    try:
+        profile = request.user.userprofile
+    except UserProfile.DoesNotExist:
+        profile = UserProfile(user=request.user)
+        
+
     if request.method == 'POST':
         form = UserForm(request.POST, instance=user)
-        form_advanced = ProfileForm(request.POST, request.FILES)
+        form_advanced = ProfileForm(request.POST, request.FILES, instance=profile)
 
         if form.is_valid and form_advanced.is_valid():
-            userprofile = form_advanced.save(commit=False) 
-            userprofile.user = user
-
             form_advanced.save()
             form.save()
             return redirect('user-profile', pk=user.id)
-
+        else:
+            form_advanced = ProfileForm(instance=profile)
     context = {'form_advanced': form_advanced, 'form': form}
     return render(request, 'rooms/edit-user.html', context)
